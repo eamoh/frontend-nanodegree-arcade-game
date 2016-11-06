@@ -8,18 +8,22 @@ var Enemy = function() {
     this.sprite = 'images/enemy-bug.png';
 
     // This sets the initial position of the Enemy to a random
-    // location on one of the three rows of stone.
-    // Uses the 'lodash' package to generate random numbers.
+    // location on one of the three rows of stone. Ideal y-coordinates for
+    // Enemies in stone blocks are 63, 147, and 230 and are contained in
+    // the possibleY array. Y-coordinates will be
+    // limited to these to make it easy to track movements.
     // Multiplied by 83 to be consistent with Engine.render().
-    // The enemyLoc variable tracks the Enemy's location as it moves
-    // across the screen
-    var initialX, initialY, enemyLoc, x, y;
-    //enemyLoc = [canvas.width/ (canvas.width - 1), _.random(2, 4) * 83];
+    var initialX, initialY, possibleY, x, y;
+
     this.initialX = 101;
-    this.initialY = Math.floor((Math.random() * 3) + 1) * 83;
+
+    // selects a y-coordinate in possibleY by randomly selecting an index in
+    // the possibleY array. The code returns a random index (integer) between
+    // 0 (starting index) and the last index in the array.
+    possibleY = [63, 147, 230];
+    this.initialY = possibleY[Math.floor(Math.random() * (possibleY.length - 0)) + 0];
     this.x = this.initialX;
     this.y = this.initialY;
-    //enemyLoc = this.getBoundingClientRect();
 
     // sets the Enemy speed by generating a random number
     // that will eventually be multiplied by dt to cause movement
