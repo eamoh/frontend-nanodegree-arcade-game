@@ -15,7 +15,7 @@ var Enemy = function() {
     // Multiplied by 83 to be consistent with Engine.render().
     var initialX, initialY, possibleY, x, y;
 
-    this.initialX = 101;
+    this.initialX = 0;
 
     // selects a y-coordinate in possibleY by randomly selecting an index in
     // the possibleY array. The code returns a random index (integer) between
@@ -28,7 +28,7 @@ var Enemy = function() {
     // sets the Enemy speed by generating a random number
     // that will eventually be multiplied by dt to cause movement
     var speed;
-    this.speed = Math.floor((Math.random() * 5) + 1);
+    this.speed = Math.floor((Math.random() * 50) + 100);
 };
 
 // Update the enemy's position, required method for game
@@ -39,14 +39,14 @@ Enemy.prototype.update = function(dt) {
     // all computers.
 
     // moves across the screen by only updating x-coordinate.
-    this.x = this.speed * dt;
+    this.x += this.speed * dt;
 
     // Handles collision with the Player. Checks to see if there's
     // a collision by comparing if x and y-coordinates are the same.
     // If so, the Player is returned to the start square.
-    if(this.x === Player.x && this.y === Player.y) {
-      this.x = this.initialX;
-      this.y = this.initialY;
+    if (this.x === Player.x && this.y === Player.y) {
+        this.x = this.initialX;
+        this.y = this.initialY;
     }
 
 };
@@ -60,72 +60,69 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function() {
-  // The image/sprite for our Player, this uses
-  // a helper we've provided to easily load images
-  this.sprite = 'images/char-boy.png';
+    this.sprite = 'images/char-boy.png';
 
-  // Sets the Player initial location to the start square.
-  // From engine.js, the start square is located in the last row
-  // at the bottom (grass) and in the 3rd column.
-  var initialX, initialY, x, y;
-  this.initialX = 3 * 101;
-  this.initialY = 6 * 83;
+    // Sets the Player initial location to the start square.
+    var initialX, initialY, x, y, speed;
+    this.initialX = 200;
+    this.initialY = 405;
 
-  this.x = this.initialX;
-  this.y = this.initialY;
+    this.x = this.initialX;
+    this.y = this.initialY;
+
+    this.speed = 100;
 };
 
 Player.prototype.update = function(dt) {
-  // moves across the screen by only updating x-coordinate.
-  this.x = this.speed * dt;
+    this.dt = dt;
 
-  // Handles collision with the Player. Checks to see if there's
-  // a collision by comparing if x and y-coordinates are the same.
-  // If so, the Player is returned to the start square.
-  if(this.x === Enemy.x && this.y === Enemy.y) {
-    this.x = this.initialX;
-    this.y = this.initialY;
-  }
+    // Handles collision with the Player. Checks to see if there's
+    // a collision by comparing if x and y-coordinates are the same.
+    // If so, the Player is returned to the start square.
+    if (this.x === Enemy.x && this.y === Enemy.y) {
+        this.x = this.initialX;
+        this.y = this.initialY;
+    }
 };
 
 // Draw the enemy on the screen, required method for game
 Player.prototype.render = function() {
-  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 // receives user input and moves the player according to that input
 Player.prototype.handleInput = function(allowedKeys) {
-  // Moves the Player while ensuring the player cannot move outside
-  // the boundaries of canvas as specifi
-  while (this.x >= 101 && this.x <= canvas.width && this.y >= 83 &&
-    this.y <= canvas.height) {
-    switch(allowedKeys) {
-      case 'left':
-        this.x -= 101;
-        break;
-      case 'right':
-        this.x += 101;
-        break;
-      case 'up':
-        this.y += 83;
-        break;
-      case 'down':
-        this.y -= 83;
-        break;
+    // Moves the Player while ensuring the player cannot move outside
+    // the boundaries of canvas as specifi
+    while (this.x >= 101 && this.x <= canvas.width && this.y >= 83 &&
+        this.y <= canvas.height) {
+        switch (allowedKeys) {
+            case 'left':
+                this.x -= 101;
+                break;
+            case 'right':
+                this.x += 101;
+                break;
+            case 'up':
+                this.y += 83;
+                break;
+            case 'down':
+                this.y -= 83;
+                break;
+        }
     }
-  }
 
-  // Implements the Player.reset() method
-  this.reset();
+    // Implements the Player.reset() method
+    this.reset();
 };
 
 Player.prototype.reset = function() {
-  // checks to see if player has reached the water and if so, resets to
-  // initial location
-  if(this.x === 83) {
-    this.x = this.initialX;
-    this.y = this.initialY;
-  }
+    // checks to see if player has reached the water and if so, resets to
+    // initial location
+    if (this.x <= 83) {
+        this.x = this.initialX;
+        this.y = this.initialY;
+    }
 };
 
 // Now instantiate your objects.
@@ -135,8 +132,8 @@ var allEnemies = [];
 var player = new Player();
 
 // create several new Enemies objects (3) and place them in the allEnemies array
-for(var i = 0; i < 3; i++) {
-  allEnemies.push(new Enemy());
+for (var i = 0; i < 3; i++) {
+    allEnemies.push(new Enemy());
 }
 
 
