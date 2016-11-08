@@ -55,16 +55,6 @@ Enemy.prototype.update = function(dt) {
       this.y = this.possibleY[Math.floor(Math.random() * (this.possibleY.length - 0)) + 0];
       this.speed = Math.floor((Math.random() * 50) + 100);
     }
-
-
-    // Handles collision with the Player. Checks to see if there's
-    // a collision by comparing if x and y-coordinates are the same.
-    // If so, the Player is returned to the start square.
-    if (this.x === Player.x && this.y === Player.y) {
-        this.x = this.initialX;
-        this.y = this.initialY;
-    }
-
 };
 
 // Draw the enemy on the screen, required method for game
@@ -89,14 +79,6 @@ var Player = function() {
 
 Player.prototype.update = function(dt) {
     this.dt = dt;
-
-    // Handles collision with the Player. Checks to see if there's
-    // a collision by comparing if x and y-coordinates are the same.
-    // If so, the Player is returned to the start square.
-    if (this.x === Enemy.x && this.y === Enemy.y) {
-        this.x = this.initialX;
-        this.y = this.initialY;
-    }
 };
 
 // Draw the enemy on the screen, required method for game
@@ -107,8 +89,7 @@ Player.prototype.render = function() {
 // receives user input and moves the player according to that input
 Player.prototype.handleInput = function(allowedKeys) {
     // Moves the Player while ensuring the player cannot move outside
-    // the boundaries of canvas as specifi
-    //if ((this.x >= -2 && this.x <= 402) && (this.y >= -10 && this.y <= 405)) {
+    // the boundaries of canvas as specified
     switch (allowedKeys) {
         case 'left':
           if (this.x > -1) {
@@ -131,19 +112,21 @@ Player.prototype.handleInput = function(allowedKeys) {
           }
           break;
     }
-    //}
 
-    // Implements the Player.reset() method
-    this.reset();
-};
+    // checks collision
+    checkCollisions();
 
-Player.prototype.reset = function() {
     // checks to see if player has reached the water and if so, resets to
     // initial location
     if (this.y === -10) {
-        this.x = this.initialX;
-        this.y = this.initialY;
+        this.reset();
     }
+};
+
+Player.prototype.reset = function() {
+    // resets to initial location
+    this.x = this.initialX;
+    this.y = this.initialY;
 };
 
 // Now instantiate your objects.
@@ -157,7 +140,6 @@ for (var i = 0; i < 3; i++) {
     allEnemies.push(new Enemy());
 }
 
-
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
@@ -170,3 +152,17 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+// Checks collision by comparing if x and y-coordinates are the same.
+// Function does this by checking that player and enemy occupy the same block.
+// if there's collission, player returns to starting block.
+function checkCollisions() {
+    for (var i = 0; i < allEnemies.length; i++) {
+      if (player.x < (allEnemies[i].x + xStep) &&
+          (player.x + xStep) > allEnemies[i].x &&
+          player.y < (allEnemies[i].y + yStep) &&
+          (player.y + yStep) > allEnemies[i].y) {
+        player.reset();
+      }
+    }
+}
