@@ -1,3 +1,10 @@
+// creating xStep for Player left and right movements and yStep for
+// Player up and down movements. xStep is calculated as one-fifth of
+// canvas width. yStep is set to 83 to reflect the same measurements in
+// Engine.js
+var xStep = 101;
+var yStep = 83;
+
 // Enemies our player must avoid
 var Enemy = function() {
     // Variables applied to each of our instances go here,
@@ -9,8 +16,8 @@ var Enemy = function() {
 
     // This sets the initial position of the Enemy to a random
     // location on one of the three rows of stone. Ideal y-coordinates for
-    // Enemies in stone blocks are 63, 147, and 230 and are contained in
-    // the possibleY array. Y-coordinates will be
+    // Enemies in stone blocks are set in increments of 83 to mirror Player movements
+    // movements and are contained in the possibleY array. Y-coordinates will be
     // limited to these to make it easy to track movements.
     // Multiplied by 83 to be consistent with Engine.render().
     var initialX, initialY, possibleY, x, y;
@@ -20,8 +27,8 @@ var Enemy = function() {
     // selects a y-coordinate in possibleY by randomly selecting an index in
     // the possibleY array. The code returns a random index (integer) between
     // 0 (starting index) and the last index in the array.
-    possibleY = [63, 147, 230];
-    this.initialY = possibleY[Math.floor(Math.random() * (possibleY.length - 0)) + 0];
+    this.possibleY = [73, 156, 239];
+    this.initialY = this.possibleY[Math.floor(Math.random() * (this.possibleY.length - 0)) + 0];
     this.x = this.initialX;
     this.y = this.initialY;
 
@@ -38,8 +45,17 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
 
-    // moves across the screen by only updating x-coordinate.
-    this.x += this.speed * dt;
+    // moves across the screen by only updating x-coordinate. Also checks to
+    // see if Enemy has gone beyond the dimensions of canvas and restarts it
+    //from the beginning.
+    if (this.x < 505) {
+      this.x += this.speed * dt;
+    } else {
+      this.x = -505;
+      this.y = this.possibleY[Math.floor(Math.random() * (this.possibleY.length - 0)) + 0];
+      this.speed = Math.floor((Math.random() * 50) + 100);
+    }
+
 
     // Handles collision with the Player. Checks to see if there's
     // a collision by comparing if x and y-coordinates are the same.
@@ -69,8 +85,6 @@ var Player = function() {
 
     this.x = this.initialX;
     this.y = this.initialY;
-
-    this.speed = 100;
 };
 
 Player.prototype.update = function(dt) {
@@ -94,23 +108,30 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(allowedKeys) {
     // Moves the Player while ensuring the player cannot move outside
     // the boundaries of canvas as specifi
-    while (this.x >= 101 && this.x <= canvas.width && this.y >= 83 &&
-        this.y <= canvas.height) {
-        switch (allowedKeys) {
-            case 'left':
-                this.x -= 101;
-                break;
-            case 'right':
-                this.x += 101;
-                break;
-            case 'up':
-                this.y += 83;
-                break;
-            case 'down':
-                this.y -= 83;
-                break;
-        }
+    //if ((this.x >= -2 && this.x <= 402) && (this.y >= -10 && this.y <= 405)) {
+    switch (allowedKeys) {
+        case 'left':
+          if (this.x > -1) {
+            this.x -= xStep;
+          }
+          break;
+        case 'right':
+          if (this.x < 401) {
+            this.x += xStep;
+          }
+          break;
+        case 'up':
+          if (this.y > -9) {
+            this.y -= yStep;
+          }
+          break;
+        case 'down':
+          if (this.y < 405) {
+            this.y += yStep;
+          }
+          break;
     }
+    //}
 
     // Implements the Player.reset() method
     this.reset();
@@ -119,7 +140,7 @@ Player.prototype.handleInput = function(allowedKeys) {
 Player.prototype.reset = function() {
     // checks to see if player has reached the water and if so, resets to
     // initial location
-    if (this.x <= 83) {
+    if (this.y === -10) {
         this.x = this.initialX;
         this.y = this.initialY;
     }
