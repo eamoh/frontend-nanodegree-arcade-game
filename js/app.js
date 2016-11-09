@@ -1,7 +1,12 @@
+// Allow the user to select the image for the player character before
+// starting the game.
+
+
+
 // creating xStep for Player left and right movements and yStep for
 // Player up and down movements. xStep is calculated as one-fifth of
 // canvas width. yStep is set to 83 to reflect the same measurements in
-// Engine.js
+// Engine.js.
 var xStep = 101;
 var yStep = 83;
 
