@@ -224,6 +224,23 @@ var Engine = (function(global) {
                 'images/char-princess-girl.png'
             ];
 
+        /* creates an object and that stores the image and coordinates of the
+         * possible characters. This will be used to determine which character
+         * the player selected
+         */
+        var Character = function(image, x, y) {
+          this.sprite = image;
+          this.x = x;
+          this.y = y;
+        };
+
+        /* array to store character objects*/
+        var playerChoices = [];
+
+        // assigns the playerChoices array to the global variable for easy use in
+        // app.js
+        global.playerChoices = playerChoices;
+
         /* Loop through the possibleChars array and draw the possible characters
          * player can choose from.
          */
@@ -235,8 +252,69 @@ var Engine = (function(global) {
              * so that we get the benefits of caching these images, since
              * we're using them over and over.
              */
-            ctx.drawImage(Resources.get(possibleChars[i]), i * 101, 2 * 83);
+            playerChoices.push(new Character(possibleChars[i], i * xStep, yStep));
+            ctx.drawImage(Resources.get(possibleChars[i]), i * xStep, yStep);
         }
+
+        // Creates Selector object that is used to select player
+        var Selector = function() {
+          this.sprite = 'images/Selector.png';
+          this.x = 0;
+          this.y = yStep + 50;
+        };
+
+        // receives user input and moves the Selector according to that input
+        /*Selector.prototype.handleInput = function(allowedKeys) {
+            // Moves the Selector while ensuring the Selector cannot move outside
+            // the range of the options shown
+            switch (allowedKeys) {
+                case 'left':
+                  if (this.x > -1) {
+                    this.x -= xStep;
+                  }
+                  break;
+                case 'right':
+                  if (this.x < 401) {
+                    this.x += xStep;
+                  }
+                  break;
+                case 'up':
+                  if (this.y > -9) {
+                    this.y -= yStep;
+                  }
+                  break;
+                case 'down':
+                  if (this.y < 405) {
+                    this.y += yStep;
+                  }
+                  break;
+            }
+        };*/
+
+        // Draw the Selector on the screen
+        Selector.prototype.render = function() {
+            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        };
+
+        // instantiate and display Selector.
+        var selector = new Selector();
+        selector.render();
+
+        // makes selector a global variable for easy access in app.js
+        global.selector = selector;
+
+        // This listens for key presses and sends the keys to your
+        // Player.handleInput() method. You don't need to modify this.
+        /*document.addEventListener('keyup', function(e) {
+            var allowedKeys = {
+                37: 'left',
+                38: 'up',
+                39: 'right',
+                40: 'down'
+            };
+
+            selector.handleInput(allowedKeys[e.keyCode]);
+        });*/
     }
 
     /* This function does nothing but it could have been a good place to
