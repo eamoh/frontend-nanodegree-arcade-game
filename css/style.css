@@ -1,3 +1,13 @@
-body {
-    text-align: center;
+* {
+    /*text-align: center;*/
+    border: 1px red solid;
+}
+
+.container {
+  max-width: 1000px;
+  flex-wrap: wrap;
+}
+
+main {
+  text-align: center;
 }
