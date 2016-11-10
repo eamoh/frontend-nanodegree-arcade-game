@@ -27,7 +27,8 @@ var Engine = (function(global) {
 
     canvas.width = 505;
     canvas.height = 606;
-    doc.body.appendChild(canvas);
+    //doc.body.appendChild(canvas);
+    $(".main-game").append(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -135,6 +136,41 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
+
+        // this object holds collectables or gems that the player can collect
+        /*var possibleGems = [
+              'images/Gem Blue.png',
+              'images/Gem Green.png',
+              'images/Gem Orange.png',
+              'images/Heart.png',
+              'images/Rock.png',       // obstacle
+              'images/Key.png'
+            ],
+            chosenGems = [],              // contains randomly selected gems
+            numGems,                      // number of gems to hold in chosenGems
+            gemX, gemY;  // random coordinates for gems on canvas based on numRows and numCols
+
+        // this array holds three randomly selected items from the possibleGems
+        // object that will be placed in the canvas. Code selects a random
+        // key in the possibleGems object and based on that, selects the
+        // corresponding gem or obstacle to include.
+        numGems = 3;
+        chosenGems.push(possibleGems[0]); */
+
+        /*for (var i = 0; i < numGems; i++) {
+          chosenGems.push(possibleGems[Math.floor(Math.random() *
+            (possibleGems.length - 0 + 1)) + 0]);
+        }*/
+
+        // Generate random coordinates to place the gems or obstacles.
+        // Place collectables anywhere other than on the water
+        /*for (var j = 0; j < numGems; j++) {
+          gemX = (Math.floor(Math.random() * (numCols - 1 + 1)) + 1) * 101;
+          gemY = (Math.floor(Math.random() * (numRows - 1 + 1)) + 1) * 83;
+
+          // draw gems in the chosenGems array at random locations on the canvas
+          ctx.drawImage(Resources.get(chosenGems[j]), gemX, gemY);
+        }*/
 
         renderEntities();
     }
