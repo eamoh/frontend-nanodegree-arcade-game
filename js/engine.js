@@ -18,17 +18,23 @@ var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
+     * also create a switchboard inside that controls the state of the game.
      */
     var doc = global.document,
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime;
+        lastTime, gameState;
 
     canvas.width = 505;
     canvas.height = 606;
     //doc.body.appendChild(canvas);
     $(".main-game").append(canvas);
+
+    /* gameState toggles between 'start' and 'playing' to determine when to
+     * show the start screen vs when to start the game.
+     */
+    gameState = 'start';
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -43,11 +49,19 @@ var Engine = (function(global) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
-        /* Call our update/render functions, pass along the time delta to
-         * our update function since it may be used for smooth animation.
-         */
-        update(dt);
-        render();
+        /* uses the gameState switchboard to control the state of the game.*/
+        switch(gameState) {
+          case 'start':
+            renderStartScreen();
+            break;
+          default:
+            /* Call our update/render functions, pass along the time delta to
+             * our update function since it may be used for smooth animation.
+             */
+            update(dt);
+            render();
+            break;
+        }
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -190,6 +204,41 @@ var Engine = (function(global) {
         player.render();
     }
 
+    function renderStartScreen() {
+        // draw the Start Screen canvas that the characters will be displayed on
+        ctx.fillStyle = "#f0ffff"; // azure
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#800000"; // maroon
+        ctx.fillText("Welcome! Please select your player: ", 50, 100);
+        ctx.font = "20pt Impact";
+
+
+        /* This array holds the characters a player can select from.
+         */
+        var possibleChars = [
+                'images/char-boy.png',
+                'images/char-cat-girl.png',
+                'images/char-horn-girl.png',
+                'images/char-pink-girl.png',
+                'images/char-princess-girl.png'
+            ];
+
+        /* Loop through the possibleChars array and draw the possible characters
+         * player can choose from.
+         */
+        for (var i = 0; i < possibleChars.length; i++) {
+            /* The drawImage function of the canvas' context element
+             * requires 3 parameters: the image to draw, the x coordinate
+             * to start drawing and the y coordinate to start drawing.
+             * We're using our Resources helpers to refer to our images
+             * so that we get the benefits of caching these images, since
+             * we're using them over and over.
+             */
+            ctx.drawImage(Resources.get(possibleChars[i]), i * 101, 2 * 83);
+        }
+    }
+
     /* This function does nothing but it could have been a good place to
      * handle game reset states - maybe a new game menu or a game over screen
      * those sorts of things. It's only called once by the init() method.
@@ -207,7 +256,19 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png',
+        'images/Heart.png',
+        'images/Rock.png',       // obstacle
+        'images/Key.png',
+        'images/Selector.png',
+        'images/Star.png'
     ]);
     Resources.onReady(init);
 
