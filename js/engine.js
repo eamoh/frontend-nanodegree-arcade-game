@@ -264,7 +264,7 @@ var Engine = (function(global) {
         };
 
         // receives user input and moves the Selector according to that input
-        /*Selector.prototype.handleInput = function(allowedKeys) {
+        Selector.prototype.handleInput = function(allowedKeys) {
             // Moves the Selector while ensuring the Selector cannot move outside
             // the range of the options shown
             switch (allowedKeys) {
@@ -289,7 +289,7 @@ var Engine = (function(global) {
                   }
                   break;
             }
-        };*/
+        };
 
         // Draw the Selector on the screen
         Selector.prototype.render = function() {
@@ -305,7 +305,7 @@ var Engine = (function(global) {
 
         // This listens for key presses and sends the keys to your
         // Player.handleInput() method. You don't need to modify this.
-        /*document.addEventListener('keyup', function(e) {
+        document.addEventListener('keyup', function(e) {
             var allowedKeys = {
                 37: 'left',
                 38: 'up',
@@ -314,7 +314,7 @@ var Engine = (function(global) {
             };
 
             selector.handleInput(allowedKeys[e.keyCode]);
-        });*/
+        });
     }
 
     /* This function does nothing but it could have been a good place to
