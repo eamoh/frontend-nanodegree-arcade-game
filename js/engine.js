@@ -34,7 +34,7 @@ var Engine = (function(global) {
     /* gameState toggles between 'start' and 'playing' to determine when to
      * show the start screen vs when to start the game.
      */
-    gameState = 'start';
+    gameState = 'playing';
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -202,6 +202,7 @@ var Engine = (function(global) {
         });
 
         player.render();
+        artifact.render();
     }
 
     function renderStartScreen() {
@@ -264,10 +265,10 @@ var Engine = (function(global) {
         };
 
         // receives user input and moves the Selector according to that input
-        Selector.prototype.handleInput = function(allowedKeys) {
+        Selector.prototype.handleInput = function(key) {
             // Moves the Selector while ensuring the Selector cannot move outside
             // the range of the options shown
-            switch (allowedKeys) {
+            switch (key) {
                 case 'left':
                   if (this.x > -1) {
                     this.x -= xStep;
@@ -296,8 +297,8 @@ var Engine = (function(global) {
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         };
 
-        // instantiate and display Selector.
-        var selector = new Selector();
+        // instantiate and display Selector. Do not use var so it becomes global
+        selector = new Selector();
         selector.render();
 
         // makes selector a global variable for easy access in app.js
@@ -355,4 +356,5 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+    global.canvas = canvas;
 })(this);
