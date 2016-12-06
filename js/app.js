@@ -1,8 +1,10 @@
 // Create "game" variable that manages global state of game.
-var Game = function() {
+var Game = function(global) {
     this.gamePlay = false;
     this.paused = false;
     this.gameOver = false;
+    enemyCollide = false;
+    artifactCollide = false;
 };
 
 // Allow the user to select the image for the player character before
@@ -91,7 +93,9 @@ var Player = function() {
     this.y = this.initialY;
 
     // give player 5 lives to start
-    this.lives = 5;
+    this.lives = 2;
+    // track player score
+    this.score = 0;
 };
 
 Player.prototype.update = function(dt) {
@@ -182,18 +186,75 @@ document.addEventListener('keyup', function(e) {
 });
 
 // Checks collision by comparing if x and y-coordinates are the same.
-// Function does this by checking that player and enemy occupy the same block.
-// if there's collission, player returns to starting block.
+// Function does this by checking that player and enemy / artifact occupy the same block.
+// If there's collision with enemy, player returns to starting block and scoring
+// is updated. If collision is with artifact, points are accumulated
 function checkCollisions() {
+    // checks collision with enemy
     for (var i = 0; i < allEnemies.length; i++) {
-      if (player.x < (allEnemies[i].x + xStep) &&
+        if (player.x < (allEnemies[i].x + xStep) &&
           (player.x + xStep) > allEnemies[i].x &&
           player.y < (allEnemies[i].y + yStep) &&
           (player.y + yStep) > allEnemies[i].y) {
-        player.reset();
-      }
+              //enemyCollide = true;
+              player.reset();
+        }
     }
+
+    // checks collision with artifacts
+    if(player.x < (artifact.x + xStep) &&
+        (player.x + xStep) > artifact.x &&
+        player.y < (artifact.y + yStep) &&
+        (player.y + yStep) > artifact.y) {
+            artifact.hide();
+            player.score += artifact.points;
+            scoreBoard.update();
+        }
 }
+
+// Scoreboard appears on top of screen and shows score
+
+var ScoreBoard = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.score = "Score: " + 0;
+};
+
+ScoreBoard.prototype.update = function() {
+    this.score = "Score: " + player.score;
+};
+
+ScoreBoard.prototype.render = function() {
+    ctx.font = "22px Arial Black";
+    ctx.fillStyle = "white";
+    ctx.fillText(this.score, this.x - 20, this.y + 125);
+    ctx.strokeText(this.score, this.x - 20, this.y + 125);
+};
+
+// LifeTracker well as how many lives player has left.
+var LifeTracker = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.sprite = 'images/Heart.png';
+    this.count = player.lives + " x ";
+};
+
+LifeTracker.prototype.update = function() {
+    this.count = player.lives + " x ";
+};
+
+LifeTracker.prototype.render = function () {
+    ctx.font = "22px Arial Black";
+    ctx.fillStyle = "white";
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.fillText(this.count, this.x - 20, this.y + 125);
+    ctx.strokeText(this.count, this.x - 20, this.y + 125);
+};
+
+// instantiate scoreboard and LifeTracker
+scoreBoard = new ScoreBoard(50, -30);
+lifeTracker = new LifeTracker(400, -30);
+
 
 /* Create item class for gems to be picked up by player
  * Player will drop item upon collission with Enemy
@@ -251,6 +312,8 @@ function checkCollisions() {
  Item.prototype.hide = function() {
      this.visible = false;
      player.carryItem = false;
+     this.x = -101;
+     this.y = -101;
  };
 
  // Draw the item on the game screen

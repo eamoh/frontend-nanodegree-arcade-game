@@ -203,6 +203,8 @@ var Engine = (function(global) {
 
         player.render();
         artifact.render();
+        scoreBoard.render();
+        lifeTracker.render();
     }
 
     function renderStartScreen() {
