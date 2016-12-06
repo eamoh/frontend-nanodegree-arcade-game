@@ -7,6 +7,9 @@ var Game = function(global) {
     artifactCollide = false;
 };
 
+// instantiate new Game
+game = new Game();
+
 // Allow the user to select the image for the player character before
 // starting the game.
 
@@ -196,8 +199,19 @@ function checkCollisions() {
           (player.x + xStep) > allEnemies[i].x &&
           player.y < (allEnemies[i].y + yStep) &&
           (player.y + yStep) > allEnemies[i].y) {
-              //enemyCollide = true;
-              player.reset();
+
+              // lose 3pts  and 1 life if player collides with enemy.
+              if(player.lives === 1 || player.score <= 3) {
+                  game.gameOver = true;
+                  player.reset();
+                  alert("Game over");
+              } else {
+                  player.score -= 3;
+                  player.lives -= 1;
+                  scoreBoard.update();
+                  lifeTracker.update();
+                  player.reset();
+              }
         }
     }
 
@@ -208,7 +222,9 @@ function checkCollisions() {
         (player.y + yStep) > artifact.y) {
             artifact.hide();
             player.score += artifact.points;
+            player.lives += artifact.lives;
             scoreBoard.update();
+            lifeTracker.update();
         }
 }
 
@@ -274,6 +290,7 @@ lifeTracker = new LifeTracker(400, -30);
     this.points = artifacts[i].points;
     this.lives = artifacts[i].lives;
     //this.status = "available";
+    console.log(i);
  };
 
  // What to do once player picks up item
@@ -323,26 +340,32 @@ lifeTracker = new LifeTracker(400, -30);
 
 // Create array from which to select random artifacts to be place on game board
 var artifacts = [{
+    name: "Gem Blue",
     sprite: 'images/Gem Blue.png',
     points: 1,
     lives: 0
 }, {
+    name: "Gem Green",
     sprite: 'images/Gem Green.png',
     points: 2,
     lives: 0
 }, {
+    name: "Gem Orange",
     sprite: 'images/Gem Orange.png',
     points: 4,
     lives: 0
 }, {
+    name: "Key",
     sprite: 'images/Key.png',
     points: 8,
     lives: 0
 }, {
+    name: "Star",
     sprite: 'images/Star.png',
     points: 10,
     lives: 0
 }, {
+    name: "Heart",
     sprite: 'images/Heart.png',
     points: 12,
     lives: 1
