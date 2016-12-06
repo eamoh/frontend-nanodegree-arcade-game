@@ -220,12 +220,14 @@ function checkCollisions() {
         (player.x + xStep) > artifact.x &&
         player.y < (artifact.y + yStep) &&
         (player.y + yStep) > artifact.y) {
+            artifact.playerCollide = true;
             artifact.hide();
             player.score += artifact.points;
             player.lives += artifact.lives;
             scoreBoard.update();
             lifeTracker.update();
-        }
+            artifact.reset();
+    }
 }
 
 // Scoreboard appears on top of screen and shows score
@@ -287,6 +289,7 @@ lifeTracker = new LifeTracker(400, -30);
     this.height = 30;
     this.width = 30;
     this.visible = true;
+    this.playerCollide = false;
     this.points = artifacts[i].points;
     this.lives = artifacts[i].lives;
     //this.status = "available";
@@ -319,8 +322,11 @@ lifeTracker = new LifeTracker(400, -30);
     this.y = player.y;
  };
 
- // Reset will set item in random location to be picked up
+ // Resets key variables for Item class
  Item.prototype.reset = function() {
+     var i = randArtifactIndex(); // stores random index for use in object
+     this.sprite = artifacts[i].sprite;
+    // sets item in random location to be picked up
     this.x = Math.floor(Math.random() * 5) * 101;
     this.y = Math.ceil(Math.random() * 3) * 83 - 11;
  };
@@ -387,37 +393,3 @@ function randomize(low, high) {
     var result = Math.floor(Math.random() * (high - low + 1) + low);
     return result;
 }
-// this object holds collectables or gems that the player can collect
-/*var possibleGems = [
-      'images/Gem Blue.png',
-      'images/Gem Green.png',
-      'images/Gem Orange.png',
-      'images/Heart.png',
-      'images/Rock.png',       // obstacle
-      'images/Key.png'
-    ],
-    chosenGems = [],              // contains randomly selected gems
-    numGems,                      // number of gems to hold in chosenGems
-    gemX, gemY;  // random coordinates for gems on canvas based on numRows and numCols
-
-// this array holds three randomly selected items from the possibleGems
-// object that will be placed in the canvas. Code selects a random
-// key in the possibleGems object and based on that, selects the
-// corresponding gem or obstacle to include.
-numGems = 3;
-chosenGems.push(possibleGems[0]); */
-
-/*for (var i = 0; i < numGems; i++) {
-  chosenGems.push(possibleGems[Math.floor(Math.random() *
-    (possibleGems.length - 0 + 1)) + 0]);
-}*/
-
-// Generate random coordinates to place the gems or obstacles.
-// Place collectables anywhere other than on the water
-/*for (var j = 0; j < numGems; j++) {
-  gemX = (Math.floor(Math.random() * (numCols - 1 + 1)) + 1) * 101;
-  gemY = (Math.floor(Math.random() * (numRows - 1 + 1)) + 1) * 83;
-
-  // draw gems in the chosenGems array at random locations on the canvas
-  ctx.drawImage(Resources.get(chosenGems[j]), gemX, gemY);
-}*/
