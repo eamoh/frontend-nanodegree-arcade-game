@@ -103,6 +103,9 @@ var Player = function() {
 
 Player.prototype.update = function(dt) {
     this.dt = dt;
+
+    // checks collision
+    checkCollisions();
 };
 
 // Draw the enemy on the screen, required method for game
@@ -126,7 +129,7 @@ Player.prototype.handleInput = function(allowedKeys) {
           }
           break;
         case 'up':
-          if (this.y > -9) {
+          if (this.y > -92) {
             this.y -= yStep;
           }
           break;
@@ -137,12 +140,9 @@ Player.prototype.handleInput = function(allowedKeys) {
           break;
     }
 
-    // checks collision
-    checkCollisions();
-
     // checks to see if player has reached the water and if so, resets to
     // initial location
-    if (this.y === -10) {
+    if (this.y === -93) {
         this.reset();
     }
 };
@@ -216,12 +216,15 @@ function checkCollisions() {
     }
 
     // checks collision with artifacts
-    if(player.x < (artifact.x + xStep) &&
+    if (player.x < (artifact.x + xStep) &&
         (player.x + xStep) > artifact.x &&
         player.y < (artifact.y + yStep) &&
         (player.y + yStep) > artifact.y) {
             artifact.playerCollide = true;
             artifact.hide();
+            if (player.y === -10) {
+
+            }
             player.score += artifact.points;
             player.lives += artifact.lives;
             scoreBoard.update();
@@ -308,8 +311,7 @@ lifeTracker = new LifeTracker(400, -30);
      player.sprite = player.sprite(0,-4) + '_w_' + this.name + '.png';
 
      // Hide item off screen (to be reused on reset)
-     this.x = -101;
-     this.y = -101;
+     this.hide();
  };
 
  // Drop item from player possession when player reaches water (top of screen),
@@ -324,8 +326,8 @@ lifeTracker = new LifeTracker(400, -30);
 
  // Resets key variables for Item class
  Item.prototype.reset = function() {
-     var i = randArtifactIndex(); // stores random index for use in object
-     this.sprite = artifacts[i].sprite;
+    var i = randArtifactIndex(); // stores random index for use in object
+    this.sprite = artifacts[i].sprite;
     // sets item in random location to be picked up
     this.x = Math.floor(Math.random() * 5) * 101;
     this.y = Math.ceil(Math.random() * 3) * 83 - 11;
@@ -388,8 +390,9 @@ function randArtifactIndex() {
     return artifactsIndex;
 }
 
-// generates random number within a given range
-function randomize(low, high) {
-    var result = Math.floor(Math.random() * (high - low + 1) + low);
-    return result;
+// generates random number between min (included) and max (excluded)
+function randomize(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
 }
