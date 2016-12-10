@@ -222,9 +222,7 @@ function checkCollisions() {
         (player.y + yStep) > artifact.y) {
             artifact.playerCollide = true;
             artifact.hide();
-            if (player.y === -10) {
 
-            }
             player.score += artifact.points;
             player.lives += artifact.lives;
             scoreBoard.update();
@@ -295,7 +293,6 @@ lifeTracker = new LifeTracker(400, -30);
     this.playerCollide = false;
     this.points = artifacts[i].points;
     this.lives = artifacts[i].lives;
-    //this.status = "available";
     console.log(i);
  };
 
@@ -327,7 +324,10 @@ lifeTracker = new LifeTracker(400, -30);
  // Resets key variables for Item class
  Item.prototype.reset = function() {
     var i = randArtifactIndex(); // stores random index for use in object
+    this.name = artifacts[i].name;
     this.sprite = artifacts[i].sprite;
+    this.points = artifacts[i].points;
+    this.lives = artifacts[i].lives;
     // sets item in random location to be picked up
     this.x = Math.floor(Math.random() * 5) * 101;
     this.y = Math.ceil(Math.random() * 3) * 83 - 11;
@@ -379,9 +379,10 @@ var artifacts = [{
     lives: 1
 }];
 
-// instantiate artifacts object
-artifact = new Item(-100,-100);
-artifact.reset();
+// instantiate artifacts object by placing in random (x, y) location
+artifact = new Item(Math.floor(Math.random() * 5) * 101,
+            Math.ceil(Math.random() * 3) * 83 - 11);
+//artifact.reset();
 
 // selects a random artifact index from the artifacts array. this will be used
 // to determine the characteristics of the random artifact generated
@@ -396,3 +397,62 @@ function randomize(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min;
 }
+
+/* Generates a countdown timer which will time user activity until the end.
+ * Source code idea obtained from:
+ * http://stackoverflow.com/questions/20618355/the-simplest-possible-javascript-countdown-timer
+ * @param {number} duration     How long (in seconds) the timer should count down for
+ * @param {text} display        The DOM selector to determine where in HTML to display timer
+ */
+
+function countdownTimer(duration, display) {
+    var start = Date.now(),
+        diff,
+        min,        // variable to store the number of minutes
+        sec;        // variable to store the number of seconds
+
+    function timer() {
+        // get the number of seconds that have passed since
+        // countdownTimer() was called. The ' | 0' expression makes sure the
+        // number of seconds is an integer and not a float
+        diff = duration - (((Date.now() - start) / 1000) | 0);
+
+        // calculates the mins and secs.
+        min = (diff / 60) | 0;
+        sec = (diff % 60) | 0;
+
+        // adds '0' in front of minutes and seconds so it shows
+        // as "03:45" vs "3:45" or "00:09" vs "00:9"
+        if (min < 10) {
+            min = "0" + min;
+        } else {
+            min = min;
+        }
+        if (sec < 10) {
+            sec = "0" + sec;
+        } else {
+            sec = sec;
+        }
+
+        // sets the content of the 'timerDisplay' (or #time) HTML element
+        timerDisplay.textContent = min + ":" + sec;
+
+        // diff = 0 at the very beginning, before the counter starts
+        if (diff <= 0) {
+            // add one second so that the countdown starts at the full
+            // duration. e.g. 03:00 not 02:59
+            start = Date.now() + 1000;
+        }
+    }
+    // call timer() and also make sure it runs / updates every second
+    timer();
+    setInterval(timer, 1000);
+}
+
+// display countdown timer on canvas / HTML
+window.onload = function() {
+    // set timer to 2mins
+    var twoMinutes = 60 * 0.5;
+    timerDisplay = document.querySelector('#timer');
+    countdownTimer(twoMinutes, timerDisplay);
+};
