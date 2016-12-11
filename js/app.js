@@ -405,6 +405,7 @@ function randomize(min, max) {
  * @param {text} display        The DOM selector to determine where in HTML to display timer
  */
 
+/*
 function countdownTimer(duration, display) {
     var start = Date.now(),
         diff,
@@ -446,13 +447,102 @@ function countdownTimer(duration, display) {
     }
     // call timer() and also make sure it runs / updates every second
     timer();
-    setInterval(timer, 1000);
+    //setInterval(timer, 1000);
 }
+*/
+
+/* Generates a countdown timer which will time user activity until the end.
+ * Source code idea obtained from:
+ * http://stackoverflow.com/questions/20618355/the-simplest-possible-javascript-countdown-timer
+ * @param {number} duration     How long (in seconds) the timer should count down for
+ * @param {text} time_delay     The time (in milliseconds), the timer should wait before
+                                the specified function is executed. This parameter is optional
+ */
+
+function CountDownTimer(duration, time_delay) {
+    this.duration = duration;
+    this.time_delay = time_delay || 1000;   // defaults to 1000 milliseconds if no parameter chosenGems
+    this.clockFunctions = [];        // stores functions to be executed in timer()
+    this.running = false;           // tracks the state of the timer.
+}
+
+CountDownTimer.prototype.start = function() {
+    if (this.running) {
+        return;
+    }
+    this.running = true;
+    var start = Date.now(),
+        that = this,
+        diff, timeObj;
+
+    (function timer() {
+        diff = that.duration - (((Date.now() - start) / 1000) | 0);
+
+        if (diff > 0) {
+            // if the countdown clock hasn't fully run down, run after every
+            // 'time_delay' no. of seconds. Since 'time_delay' is 1sec (1,000ms)
+            // by default, it means run timer() after every second, which is how
+            // often we want our timer to be updating.
+            setTimeout(timer, that.time_delay);
+        } else {
+            // stops timer from automatically restarting
+            diff = 0;
+            that.running = false;
+        }
+
+        timeObj = CountDownTimer.parse(diff);
+        that.clockFunctions.forEach(function(ftn) {
+            ftn.call(this, timeObj.minutes, timeObj.seconds);
+        }, that);
+    })();
+};
+
+// adds functions ('ftn') to the clockFunctions array so they can be executed
+// in the timer() function when CountDownTimer.start() is called.
+CountDownTimer.prototype.addClock = function(ftn) {
+    if (typeof ftn ==='function') {
+        this.clockFunctions.push(ftn);
+    }
+    return this;
+};
+
+// stops and restarts clock by toggling the this.running boolean for use in
+// CountDownTimer.start()
+CountDownTimer.prototype.expired = function() {
+    return !this.running;
+};
+
+// splits time from secs to mins and secs and returns it
+CountDownTimer.parse = function(seconds) {
+    return {
+        'minutes': (seconds / 60) | 0,
+        'seconds': (seconds % 60) | 0
+    };
+};
 
 // display countdown timer on canvas / HTML
 window.onload = function() {
-    // set timer to 2mins
-    var twoMinutes = 60 * 0.5;
-    timerDisplay = document.querySelector('#timer');
-    countdownTimer(twoMinutes, timerDisplay);
+
+    var time = 15,      // set timer to 2mins
+        display = document.querySelector('#timer'),
+        stopClock = new CountDownTimer(time);
+
+    // fill up clockFunctions array with functions to be executed during runtime
+    stopClock.addClock(format).start();
+
+    // format timer display format to "02:08 minutes"
+    function format(minutes, seconds) {
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        } else {
+            minutes = minutes;
+        }
+        if (seconds < 10) {
+            seconds = "0" + seconds;
+        } else {
+            seconds = seconds;
+        }
+
+        display.textContent = minutes + ':' + seconds;  // writes time into HTML
+    }
 };
