@@ -2,7 +2,7 @@
 var Game = function(global) {
     this.gamePlay = false;
     this.paused = false;
-    this.gameOver = false;
+    //this.gameOver = false;
     enemyCollide = false;
     artifactCollide = false;
 };
@@ -180,8 +180,11 @@ document.addEventListener('keyup', function(e) {
         82: 'restart'       // R
     };
 
-    //selector.handleInput(allowedKeys[e.keyCode]);
-    player.handleInput(allowedKeys[e.keyCode]);
+    if (!gamePlaying) {
+        selector.handleInput(allowedKeys[e.keyCode]);
+    } else {
+        player.handleInput(allowedKeys[e.keyCode]);
+    }
     console.log("Key Code:", [e.keyCode], "Allowed Key:", allowedKeys[e.keyCode]);
     if (e.keyCode in allowedKeys) {
         e.preventDefault();
@@ -202,9 +205,10 @@ function checkCollisions() {
 
               // lose 3pts  and 1 life if player collides with enemy.
               if(player.lives === 1 || player.score <= 3) {
-                  game.gameOver = true;
+                  //game.gameOver = true;
                   player.reset();
-                  alert("Game over");
+                  //alert("Game over");
+                  gameOver();
               } else {
                   player.score -= 3;
                   player.lives -= 1;
@@ -402,59 +406,6 @@ function randomize(min, max) {
  * Source code idea obtained from:
  * http://stackoverflow.com/questions/20618355/the-simplest-possible-javascript-countdown-timer
  * @param {number} duration     How long (in seconds) the timer should count down for
- * @param {text} display        The DOM selector to determine where in HTML to display timer
- */
-
-/*
-function countdownTimer(duration, display) {
-    var start = Date.now(),
-        diff,
-        min,        // variable to store the number of minutes
-        sec;        // variable to store the number of seconds
-
-    function timer() {
-        // get the number of seconds that have passed since
-        // countdownTimer() was called. The ' | 0' expression makes sure the
-        // number of seconds is an integer and not a float
-        diff = duration - (((Date.now() - start) / 1000) | 0);
-
-        // calculates the mins and secs.
-        min = (diff / 60) | 0;
-        sec = (diff % 60) | 0;
-
-        // adds '0' in front of minutes and seconds so it shows
-        // as "03:45" vs "3:45" or "00:09" vs "00:9"
-        if (min < 10) {
-            min = "0" + min;
-        } else {
-            min = min;
-        }
-        if (sec < 10) {
-            sec = "0" + sec;
-        } else {
-            sec = sec;
-        }
-
-        // sets the content of the 'timerDisplay' (or #time) HTML element
-        timerDisplay.textContent = min + ":" + sec;
-
-        // diff = 0 at the very beginning, before the counter starts
-        if (diff <= 0) {
-            // add one second so that the countdown starts at the full
-            // duration. e.g. 03:00 not 02:59
-            start = Date.now() + 1000;
-        }
-    }
-    // call timer() and also make sure it runs / updates every second
-    timer();
-    //setInterval(timer, 1000);
-}
-*/
-
-/* Generates a countdown timer which will time user activity until the end.
- * Source code idea obtained from:
- * http://stackoverflow.com/questions/20618355/the-simplest-possible-javascript-countdown-timer
- * @param {number} duration     How long (in seconds) the timer should count down for
  * @param {text} time_delay     The time (in milliseconds), the timer should wait before
                                 the specified function is executed. This parameter is optional
  */
@@ -472,8 +423,11 @@ CountDownTimer.prototype.start = function() {
     }
     this.running = true;
     var start = Date.now(),
-        that = this,
-        diff, timeObj;
+        diff, timeObj,
+        // modification helps compiler differentiate between 'this' referring to
+        // the CountDownTimer object and 'this' referring to the function objects
+        // in the clockFunctions array using the call() method.
+        that = this;
 
     (function timer() {
         diff = that.duration - (((Date.now() - start) / 1000) | 0);
@@ -546,3 +500,57 @@ window.onload = function() {
         display.textContent = minutes + ':' + seconds;  // writes time into HTML
     }
 };
+
+// Creates Selector object that is used to select player
+var Selector = function() {
+  this.sprite = 'images/Selector.png';
+  this.x = 0;
+  this.y = yStep + 50;
+};
+
+// receives user input and moves the Selector according to that input
+Selector.prototype.handleInput = function(key) {
+    // Moves the Selector while ensuring the Selector cannot move outside
+    // the range of the options shown
+    switch (key) {
+        case 'left':
+            if (this.x > -1) {
+            this.x -= xStep;
+            }
+            break;
+        case 'right':
+            if (this.x < 401) {
+            this.x += xStep;
+            }
+            break;
+        case 'up':
+            if (this.y > -9) {
+            this.y -= yStep;
+            }
+            break;
+        case 'down':
+            if (this.y < 405) {
+            this.y += yStep;
+            }
+            break;
+        case 'enter':
+            selectedChar = this.x;
+            gamePlaying = true;
+            //gameReset();
+            break;
+        default:
+            break;
+    }
+};
+
+// Draw the Selector on the screen
+Selector.prototype.render = function() {
+    ctx.save();
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.restore();
+};
+
+// instantiates selector, which is first called in Engine.js before init()
+function startLoad() {
+    selector = new Selector();
+}

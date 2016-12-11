@@ -24,17 +24,17 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime, gameState;
+        lastTime;
 
     canvas.width = 505;
     canvas.height = 606;
     //doc.body.appendChild(canvas);
     $(".main-game").append(canvas);
 
-    /* gameState toggles between 'start' and 'playing' to determine when to
-     * show the start screen vs when to start the game.
+    /* 'gamePlaying' toggles between 'true' and 'false' to determine when to
+     * show the start screen (false) vs when to show the game screen (true)
      */
-    gameState = 'playing';
+    gamePlaying = false;
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -49,18 +49,20 @@ var Engine = (function(global) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
-        /* uses the gameState switchboard to control the state of the game.*/
-        switch(gameState) {
-          case 'start':
-            renderStartScreen();
-            break;
-          default:
+        /* uses the gamePlaying switchboard to control the state of the game.*/
+        if (gamePlaying) {
             /* Call our update/render functions, pass along the time delta to
              * our update function since it may be used for smooth animation.
              */
             update(dt);
             render();
-            break;
+
+            if (player.lives === 0) {
+                gameOver();
+                return;
+            }
+        } else {
+            renderStartScreen();
         }
 
         /* Set our lastTime variable which is used to determine the time delta
@@ -71,7 +73,7 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        win.requestAnimationFrame(main);
+        reqID = win.requestAnimationFrame(main);
     }
 
     /* This function does some initial setup that should only occur once,
@@ -80,6 +82,7 @@ var Engine = (function(global) {
      */
     function init() {
         reset();
+        startLoad();
         lastTime = Date.now();
         main();
     }
@@ -122,71 +125,39 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
-        var rowImages = [
-                'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
-            ],
-            numRows = 6,
-            numCols = 5,
-            row, col;
+        if (gamePlaying) {
+            var rowImages = [
+                    'images/water-block.png',   // Top row is water
+                    'images/stone-block.png',   // Row 1 of 3 of stone
+                    'images/stone-block.png',   // Row 2 of 3 of stone
+                    'images/stone-block.png',   // Row 3 of 3 of stone
+                    'images/grass-block.png',   // Row 1 of 2 of grass
+                    'images/grass-block.png'    // Row 2 of 2 of grass
+                ],
+                numRows = 6,
+                numCols = 5,
+                row, col;
 
-        /* Loop through the number of rows and columns we've defined above
-         * and, using the rowImages array, draw the correct image for that
-         * portion of the "grid"
-         */
-        for (row = 0; row < numRows; row++) {
-            for (col = 0; col < numCols; col++) {
-                /* The drawImage function of the canvas' context element
-                 * requires 3 parameters: the image to draw, the x coordinate
-                 * to start drawing and the y coordinate to start drawing.
-                 * We're using our Resources helpers to refer to our images
-                 * so that we get the benefits of caching these images, since
-                 * we're using them over and over.
-                 */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+            /* Loop through the number of rows and columns we've defined above
+             * and, using the rowImages array, draw the correct image for that
+             * portion of the "grid"
+             */
+            for (row = 0; row < numRows; row++) {
+                for (col = 0; col < numCols; col++) {
+                    /* The drawImage function of the canvas' context element
+                     * requires 3 parameters: the image to draw, the x coordinate
+                     * to start drawing and the y coordinate to start drawing.
+                     * We're using our Resources helpers to refer to our images
+                     * so that we get the benefits of caching these images, since
+                     * we're using them over and over.
+                     */
+                    ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+                }
             }
+            renderEntities();
+        } else {
+            renderStartScreen();
         }
-
-        // this object holds collectables or gems that the player can collect
-        /*var possibleGems = [
-              'images/Gem Blue.png',
-              'images/Gem Green.png',
-              'images/Gem Orange.png',
-              'images/Heart.png',
-              'images/Rock.png',       // obstacle
-              'images/Key.png'
-            ],
-            chosenGems = [],              // contains randomly selected gems
-            numGems,                      // number of gems to hold in chosenGems
-            gemX, gemY;  // random coordinates for gems on canvas based on numRows and numCols
-
-        // this array holds three randomly selected items from the possibleGems
-        // object that will be placed in the canvas. Code selects a random
-        // key in the possibleGems object and based on that, selects the
-        // corresponding gem or obstacle to include.
-        numGems = 3;
-        chosenGems.push(possibleGems[0]); */
-
-        /*for (var i = 0; i < numGems; i++) {
-          chosenGems.push(possibleGems[Math.floor(Math.random() *
-            (possibleGems.length - 0 + 1)) + 0]);
-        }*/
-
-        // Generate random coordinates to place the gems or obstacles.
-        // Place collectables anywhere other than on the water
-        /*for (var j = 0; j < numGems; j++) {
-          gemX = (Math.floor(Math.random() * (numCols - 1 + 1)) + 1) * 101;
-          gemY = (Math.floor(Math.random() * (numRows - 1 + 1)) + 1) * 83;
-
-          // draw gems in the chosenGems array at random locations on the canvas
-          ctx.drawImage(Resources.get(chosenGems[j]), gemX, gemY);
-        }*/
-
-        renderEntities();
     }
 
     /* This function is called by the render function and is called on each game
@@ -216,6 +187,8 @@ var Engine = (function(global) {
         ctx.fillText("Welcome! Please select your player: ", 50, 100);
         ctx.font = "20pt Impact";
 
+        // draws selector on start Screen
+        selector.render();
 
         /* This array holds the characters a player can select from.
          */
@@ -258,66 +231,6 @@ var Engine = (function(global) {
             playerChoices.push(new Character(possibleChars[i], i * xStep, yStep));
             ctx.drawImage(Resources.get(possibleChars[i]), i * xStep, yStep);
         }
-
-        // Creates Selector object that is used to select player
-        var Selector = function() {
-          this.sprite = 'images/Selector.png';
-          this.x = 0;
-          this.y = yStep + 50;
-        };
-
-        // receives user input and moves the Selector according to that input
-        Selector.prototype.handleInput = function(key) {
-            // Moves the Selector while ensuring the Selector cannot move outside
-            // the range of the options shown
-            switch (key) {
-                case 'left':
-                  if (this.x > -1) {
-                    this.x -= xStep;
-                  }
-                  break;
-                case 'right':
-                  if (this.x < 401) {
-                    this.x += xStep;
-                  }
-                  break;
-                case 'up':
-                  if (this.y > -9) {
-                    this.y -= yStep;
-                  }
-                  break;
-                case 'down':
-                  if (this.y < 405) {
-                    this.y += yStep;
-                  }
-                  break;
-            }
-        };
-
-        // Draw the Selector on the screen
-        Selector.prototype.render = function() {
-            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-        };
-
-        // instantiate and display Selector. Do not use var so it becomes global
-        selector = new Selector();
-        selector.render();
-
-        // makes selector a global variable for easy access in app.js
-        global.selector = selector;
-
-        // This listens for key presses and sends the keys to your
-        // Player.handleInput() method. You don't need to modify this.
-        document.addEventListener('keyup', function(e) {
-            var allowedKeys = {
-                37: 'left',
-                38: 'up',
-                39: 'right',
-                40: 'down'
-            };
-
-            selector.handleInput(allowedKeys[e.keyCode]);
-        });
     }
 
     /* This function does nothing but it could have been a good place to
@@ -326,6 +239,17 @@ var Engine = (function(global) {
      */
     function reset() {
         // noop
+    }
+
+    // create gameOver screen
+    function gameOver() {
+        ctx.fillStyle = "maroon";
+        ctx.font = "bold 30px arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Game over", ctx.canvas.width / 2, 300);
+        //ctx.strokeText("Game over", canvas.width / 2, canvas.height / 2 + 60);
+        win.cancelAnimationFrame(reqID);
+        console.log("game over function activated");
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -358,5 +282,5 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
-    global.canvas = canvas;
+    global.gameOver = gameOver;
 })(this);
