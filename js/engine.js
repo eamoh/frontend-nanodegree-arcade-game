@@ -81,7 +81,7 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
-        reset();
+        gameReset();
         startLoad();
         lastTime = Date.now();
         main();
@@ -192,13 +192,13 @@ var Engine = (function(global) {
 
         /* This array holds the characters a player can select from.
          */
-        var possibleChars = [
-                'images/char-boy.png',
-                'images/char-cat-girl.png',
-                'images/char-horn-girl.png',
-                'images/char-pink-girl.png',
-                'images/char-princess-girl.png'
-            ];
+        possibleChars = [
+            'images/char-boy.png',
+            'images/char-cat-girl.png',
+            'images/char-horn-girl.png',
+            'images/char-pink-girl.png',
+            'images/char-princess-girl.png'
+        ];
 
         /* creates an object and that stores the image and coordinates of the
          * possible characters. This will be used to determine which character
@@ -211,11 +211,7 @@ var Engine = (function(global) {
         };
 
         /* array to store character objects*/
-        var playerChoices = [];
-
-        // assigns the playerChoices array to the global variable for easy use in
-        // app.js
-        global.playerChoices = playerChoices;
+        playerChoices = [];
 
         /* Loop through the possibleChars array and draw the possible characters
          * player can choose from.
@@ -237,8 +233,16 @@ var Engine = (function(global) {
      * handle game reset states - maybe a new game menu or a game over screen
      * those sorts of things. It's only called once by the init() method.
      */
-    function reset() {
-        // noop
+    function gameReset() {
+        // reset enemies
+        allEnemies = [];
+        maxEnemy = 5;
+        for (var i = 0; i < maxEnemy; i++) {
+            allEnemies.push(new Enemy());
+        }
+        // reset player
+        player = new Player();
+        player.sprite = possibleChars[selectedChar];
     }
 
     // create gameOver screen

@@ -21,6 +21,16 @@ game = new Game();
 // Engine.js.
 var xStep = 101;
 var yStep = 83;
+var selectedChar;
+/* This array holds the characters a player can select from.
+ */
+possibleChars = [
+    'images/char-boy.png',
+    'images/char-cat-girl.png',
+    'images/char-horn-girl.png',
+    'images/char-pink-girl.png',
+    'images/char-princess-girl.png'
+];
 
 // Enemies our player must avoid
 var Enemy = function() {
@@ -84,7 +94,7 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function() {
-    this.sprite = 'images/char-boy.png';
+    this.sprite = possibleChars[selectedChar];
 
     // Sets the Player initial location to the start square.
     var initialX, initialY, x, y, speed;
@@ -158,11 +168,12 @@ Player.prototype.reset = function() {
 // Place the player object in a variable called player
 // Place the random artifact (gems, hearts, keys) in a variable called artifact
 // Do not use var so it becomes global
-var allEnemies = [];
+allEnemies = [];
 player = new Player();
 
 // create several new Enemies objects (3) and place them in the allEnemies array
-for (var i = 0; i < 3; i++) {
+maxEnemy = 5;
+for (var i = 0; i < maxEnemy; i++) {
     allEnemies.push(new Enemy());
 }
 
@@ -182,6 +193,7 @@ document.addEventListener('keyup', function(e) {
 
     if (!gamePlaying) {
         selector.handleInput(allowedKeys[e.keyCode]);
+        console.log(selectedChar);
     } else {
         player.handleInput(allowedKeys[e.keyCode]);
     }
@@ -534,9 +546,21 @@ Selector.prototype.handleInput = function(key) {
             }
             break;
         case 'enter':
-            selectedChar = this.x;
+            // selects an index of playerChoices that will be used to determine
+            // the user's player selection. The logic for selectedChar is that
+            // since playerChoices is basically making possible player objects
+            // out of the image sprites in possibleChars, the x coordinates
+            // divided by xStep should give you the index since the x coordinate
+            // was initially determined under renderStartScreen by multiplying
+            // the index by xStep. Since the starting x coordinate of 'selector'
+            // and the first object in playerChoices is the same (0), and they
+            // both move by a factor of xStep, they will always have the same x coord.
+            // Since xStep is >= 101, selectedChar will never be NaN even when
+            // this.x = 0.
+
+            selectedChar = this.x / xStep;
             gamePlaying = true;
-            //gameReset();
+            gameReset();
             break;
         default:
             break;
@@ -553,4 +577,16 @@ Selector.prototype.render = function() {
 // instantiates selector, which is first called in Engine.js before init()
 function startLoad() {
     selector = new Selector();
+}
+
+function gameReset() {
+    // reset enemies
+    allEnemies = [];
+    maxEnemy = 5;
+    for (var i = 0; i < maxEnemy; i++) {
+        allEnemies.push(new Enemy());
+    }
+    // reset player
+    player = new Player();
+    player.sprite = possibleChars[selectedChar];
 }
