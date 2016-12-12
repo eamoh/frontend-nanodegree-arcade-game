@@ -112,25 +112,32 @@ Player.prototype.handleInput = function(allowedKeys) {
     // the boundaries of canvas as specified
     switch (allowedKeys) {
         case 'left':
-          if (this.x > -1) {
+            if (this.x > -1) {
             this.x -= xStep;
-          }
-          break;
+            }
+            break;
         case 'right':
-          if (this.x < 401) {
+            if (this.x < 401) {
             this.x += xStep;
-          }
-          break;
+            }
+            break;
         case 'up':
-          if (this.y > -92) {
+            if (this.y > -92) {
             this.y -= yStep;
-          }
-          break;
+            }
+            break;
         case 'down':
-          if (this.y < 405) {
+            if (this.y < 405) {
             this.y += yStep;
-          }
-          break;
+            }
+            break;
+        case 'stop':
+            cancelAnimationFrame(reqID);
+            break;
+        case 'pause':
+            isPaused = !isPaused; // toggles the pause state
+            break;
+
     }
 
     // checks to see if player has reached the water and if so, resets to
@@ -165,13 +172,14 @@ for (var i = 0; i < maxEnemy; i++) {
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         13: 'enter',
-        32: 'spacebar',
+        32: 'pause',     // spacebar
         37: 'left',
         38: 'up',
         39: 'right',
         40: 'down',
         80: 'pause',        // P
-        82: 'restart'       // R
+        82: 'restart',       // R
+        83: 'stop'          // S
     };
 
     if (!gamePlaying) {
@@ -462,16 +470,19 @@ CountDownTimer.parse = function(seconds) {
     };
 };
 
-// display countdown timer on canvas / HTML
+// display countdown timer on canvas / HTML and start running clock when game starts
 window.onload = function() {
-
     var time = 15,      // set timer to 2mins
-        display = document.querySelector('#timer');
+        display = document.querySelector('#timer'),
+        timeObj = CountDownTimer.parse(time);
 
-    stopClock = new CountDownTimer(time);
+    stopClock = new CountDownTimer(time);   // make global so we can check if clock is running
+
+    // displays timer but doesn't start it
+    format(timeObj.minutes, timeObj.seconds);
 
     // fill up clockFunctions array with functions to be executed during runtime
-    stopClock.addClock(format).start();
+    stopClock.addClock(format);
 
     // format timer display format to "02:08 minutes"
     function format(minutes, seconds) {

@@ -26,6 +26,8 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
+    isPaused = false;   // toggle to pause and resume game
+
     requestAnimationFrame = window.requestAnimationFrame ||
                             window.mozRequestAnimationFrame ||
                             window.webkitRequestAnimationFrame ||
@@ -48,41 +50,45 @@ var Engine = (function(global) {
      * and handles properly calling the update and render methods.
      */
     function main() {
-        /* Get our time delta information which is required if your game
-         * requires smooth animation. Because everyone's computer processes
-         * instructions at different speeds we need a constant value that
-         * would be the same for everyone (regardless of how fast their
-         * computer is) - hurray time!
-         */
-        var now = Date.now(),
-            dt = (now - lastTime) / 1000.0;
-
-        /* uses the gamePlaying switchboard to control the state of the game.*/
-        if (gamePlaying) {
-            /* Call our update/render functions, pass along the time delta to
-             * our update function since it may be used for smooth animation.
-             */
-            update(dt);
-            render();
-
-            // determines when game ends
-            if (player.lives === 0) {
-                gameOver();
-                return;
-            }
-        } else {
-            renderStartScreen();
-        }
-
-        /* Set our lastTime variable which is used to determine the time delta
-         * for the next time this function is called.
-         */
-        lastTime = now;
 
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        reqID = requestAnimationFrame(main);
+         if (isPaused === false) {
+             /* Get our time delta information which is required if your game
+              * requires smooth animation. Because everyone's computer processes
+              * instructions at different speeds we need a constant value that
+              * would be the same for everyone (regardless of how fast their
+              * computer is) - hurray time!
+              */
+
+             var now = Date.now(),
+                 dt = (now - lastTime) / 1000.0;
+
+             /* uses the gamePlaying switchboard to control the state of the game.*/
+             if (gamePlaying) {
+                 /* Call our update/render functions, pass along the time delta to
+                  * our update function since it may be used for smooth animation.
+                  */
+                 update(dt);
+                 render();
+
+                 // determines when game ends
+                 if (player.lives === 0) {
+                     gameOver();
+                     return;
+                 }
+             } else {
+                 renderStartScreen();
+             }
+
+             /* Set our lastTime variable which is used to determine the time delta
+              * for the next time this function is called.
+              */
+             lastTime = now;
+         }
+
+         reqID = requestAnimationFrame(main);
     }
 
     /* This function does some initial setup that should only occur once,
