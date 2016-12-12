@@ -1,20 +1,3 @@
-// Create "game" variable that manages global state of game.
-var Game = function(global) {
-    this.gamePlay = false;
-    this.paused = false;
-    //this.gameOver = false;
-    enemyCollide = false;
-    artifactCollide = false;
-};
-
-// instantiate new Game
-game = new Game();
-
-// Allow the user to select the image for the player character before
-// starting the game.
-
-
-
 // creating xStep for Player left and right movements and yStep for
 // Player up and down movements. xStep is calculated as one-fifth of
 // canvas width. yStep is set to 83 to reflect the same measurements in
@@ -216,18 +199,15 @@ function checkCollisions() {
           (player.y + yStep) > allEnemies[i].y) {
 
               // lose 3pts  and 1 life if player collides with enemy.
-              if(player.lives === 1 || player.score <= 3) {
-                  //game.gameOver = true;
-                  player.reset();
-                  //alert("Game over");
-                  gameOver();
-              } else {
-                  player.score -= 3;
-                  player.lives -= 1;
-                  scoreBoard.update();
-                  lifeTracker.update();
-                  player.reset();
-              }
+            if (player.score <= 0) {
+                player.score = 0;
+                player.lives -= 1;
+                player.reset();
+            } else {
+                player.score -= 3;
+                player.lives -= 1;
+                player.reset();
+            }
         }
     }
 
@@ -236,13 +216,10 @@ function checkCollisions() {
         (player.x + xStep) > artifact.x &&
         player.y < (artifact.y + yStep) &&
         (player.y + yStep) > artifact.y) {
-            artifact.playerCollide = true;
-            artifact.hide();
 
+            artifact.hide();
             player.score += artifact.points;
             player.lives += artifact.lives;
-            scoreBoard.update();
-            lifeTracker.update();
             artifact.reset();
     }
 }
@@ -306,7 +283,6 @@ lifeTracker = new LifeTracker(400, -30);
     this.height = 30;
     this.width = 30;
     this.visible = true;
-    this.playerCollide = false;
     this.points = artifacts[i].points;
     this.lives = artifacts[i].lives;
     console.log(i);
@@ -490,8 +466,9 @@ CountDownTimer.parse = function(seconds) {
 window.onload = function() {
 
     var time = 15,      // set timer to 2mins
-        display = document.querySelector('#timer'),
-        stopClock = new CountDownTimer(time);
+        display = document.querySelector('#timer');
+
+    stopClock = new CountDownTimer(time);
 
     // fill up clockFunctions array with functions to be executed during runtime
     stopClock.addClock(format).start();

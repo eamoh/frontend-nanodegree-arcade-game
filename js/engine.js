@@ -26,6 +26,14 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
+    requestAnimationFrame = window.requestAnimationFrame ||
+                            window.mozRequestAnimationFrame ||
+                            window.webkitRequestAnimationFrame ||
+                            window.msRequestAnimationFrame;
+
+    cancelAnimationFrame = window.cancelAnimationFrame ||
+                            window.mozCancelAnimationFrame;
+
     canvas.width = 505;
     canvas.height = 606;
     //doc.body.appendChild(canvas);
@@ -57,6 +65,7 @@ var Engine = (function(global) {
             update(dt);
             render();
 
+            // determines when game ends
             if (player.lives === 0) {
                 gameOver();
                 return;
@@ -73,7 +82,7 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        reqID = win.requestAnimationFrame(main);
+        reqID = requestAnimationFrame(main);
     }
 
     /* This function does some initial setup that should only occur once,
@@ -113,6 +122,8 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+        scoreBoard.update();
+        lifeTracker.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -190,16 +201,6 @@ var Engine = (function(global) {
         // draws selector on start Screen
         selector.render();
 
-        /* This array holds the characters a player can select from.
-         */
-        possibleChars = [
-            'images/char-boy.png',
-            'images/char-cat-girl.png',
-            'images/char-horn-girl.png',
-            'images/char-pink-girl.png',
-            'images/char-princess-girl.png'
-        ];
-
         /* creates an object and that stores the image and coordinates of the
          * possible characters. This will be used to determine which character
          * the player selected
@@ -233,16 +234,8 @@ var Engine = (function(global) {
      * handle game reset states - maybe a new game menu or a game over screen
      * those sorts of things. It's only called once by the init() method.
      */
-    function gameReset() {
-        // reset enemies
-        allEnemies = [];
-        maxEnemy = 5;
-        for (var i = 0; i < maxEnemy; i++) {
-            allEnemies.push(new Enemy());
-        }
-        // reset player
-        player = new Player();
-        player.sprite = possibleChars[selectedChar];
+    function reset() {
+        //noop
     }
 
     // create gameOver screen
@@ -252,7 +245,7 @@ var Engine = (function(global) {
         ctx.textAlign = "center";
         ctx.fillText("Game over", ctx.canvas.width / 2, 300);
         //ctx.strokeText("Game over", canvas.width / 2, canvas.height / 2 + 60);
-        win.cancelAnimationFrame(reqID);
+        cancelAnimationFrame(reqID);
         console.log("game over function activated");
     }
 
