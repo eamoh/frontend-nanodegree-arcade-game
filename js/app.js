@@ -46,7 +46,7 @@ var Enemy = function() {
     // sets the Enemy speed by generating a random number
     // that will eventually be multiplied by dt to cause movement
     var speed;
-    this.speed = Math.floor((Math.random() * 50) + 100);
+    this.speed = Math.floor(Math.random() * 150) + 100;
 };
 
 // Update the enemy's position, required method for game
@@ -59,18 +59,25 @@ Enemy.prototype.update = function(dt) {
     // moves across the screen by only updating x-coordinate. Also checks to
     // see if Enemy has gone beyond the dimensions of canvas and restarts it
     //from the beginning.
-    if (this.x < 505) {
-      this.x += this.speed * dt;
-    } else {
-      this.x = -505;
-      this.y = possibleY[Math.floor(Math.random() * (possibleY.length - 0)) + 0];
-      this.speed = Math.floor((Math.random() * 50) + 100);
+    if (isPaused === false) {
+        if (this.x < 505) {
+          this.x += (this.speed * dt);
+        } else {
+          this.x = -505;
+          this.y = possibleY[Math.floor(Math.random() * (possibleY.length - 0)) + 0];
+          this.increaseSpeed();
+        }
     }
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+// Increase speed of enemies slightly
+Enemy.prototype.increaseSpeed = function () {
+    this.speed += 5;
 };
 
 // Now write your own player class
@@ -496,7 +503,6 @@ window.onload = function() {
         } else {
             seconds = seconds;
         }
-
         display.textContent = minutes + ':' + seconds;  // writes time into HTML
     }
 };
