@@ -239,9 +239,9 @@ function checkCollisions() {
 
 // Scoreboard appears on top of screen and shows score
 
-var ScoreBoard = function(x, y) {
-    this.x = x;
-    this.y = y;
+var ScoreBoard = function() {
+    this.x = 100;
+    this.y = -30;
     this.score = "Score: " + 0;
 };
 
@@ -250,16 +250,16 @@ ScoreBoard.prototype.update = function() {
 };
 
 ScoreBoard.prototype.render = function() {
-    ctx.font = "30px Arial Black";
+    ctx.font = "28px Arial Black";
     ctx.fillStyle = "white";
     ctx.fillText(this.score, this.x - 20, this.y + 125);
     ctx.strokeText(this.score, this.x - 20, this.y + 125);
 };
 
 // LifeTracker well as how many lives player has left.
-var LifeTracker = function(x, y) {
-    this.x = x;
-    this.y = y;
+var LifeTracker = function() {
+    this.x = 400;
+    this.y = -30;
     this.sprite = 'images/Heart.png';
     this.count = player.lives + " x ";
 };
@@ -269,7 +269,7 @@ LifeTracker.prototype.update = function() {
 };
 
 LifeTracker.prototype.render = function () {
-    ctx.font = "30px Arial Black";
+    ctx.font = "28px Arial Black";
     ctx.fillStyle = "white";
     ctx.drawImage(Resources.get(this.sprite), this.x + 20, this.y + 70, 40, 80);
     ctx.fillText(this.count, this.x - 30, this.y + 125);
@@ -277,8 +277,8 @@ LifeTracker.prototype.render = function () {
 };
 
 // instantiate scoreboard and LifeTracker
-scoreBoard = new ScoreBoard(50, -30);
-lifeTracker = new LifeTracker(400, -30);
+scoreBoard = new ScoreBoard();
+lifeTracker = new LifeTracker();
 
 
 /* Create item class for gems to be picked up by player
@@ -480,7 +480,7 @@ CountDownTimer.parse = function(seconds) {
 
 // display countdown timer on canvas / HTML and start running clock when game starts
 window.onload = function() {
-    var time = 60 * 2,      // set timer to 2mins
+    var time = 60 * 1.5,      // set timer to 1.5mins
         display = document.querySelector('#timer'),
         timeObj = CountDownTimer.parse(time);
 
