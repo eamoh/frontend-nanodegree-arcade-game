@@ -185,7 +185,6 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down',
         80: 'pause',        // P
-        82: 'restart',       // R
         83: 'stop'          // S
     };
 
@@ -294,8 +293,6 @@ lifeTracker = new LifeTracker(400, -30);
     this.sprite = artifacts[i].sprite;
     this.x = x;
     this.y = y; // possibleY[randomize(0, possibleY.length)];
-    this.height = 30;
-    this.width = 30;
     this.visible = true;
     this.points = artifacts[i].points;
     this.lives = artifacts[i].lives;
@@ -446,16 +443,16 @@ CountDownTimer.prototype.start = function() {
         }
 
         timeObj = CountDownTimer.parse(diff);
-        
-        if (timeObj.seconds === 0) {
-            gameOver();
-        }
+
         if (timeObj.seconds > 0) {
             that.clockFunctions.forEach(function(ftn) {
                 ftn.call(this, timeObj.minutes, timeObj.seconds);
             }, that);
         }
-    }());
+        if (timeObj.seconds === 0) {
+            gameOver();
+        }
+    })();
 };
 
 // adds functions ('ftn') to the clockFunctions array so they can be executed
@@ -483,7 +480,7 @@ CountDownTimer.parse = function(seconds) {
 
 // display countdown timer on canvas / HTML and start running clock when game starts
 window.onload = function() {
-    var time = 5,      // set timer to 2mins
+    var time = 60 * 2,      // set timer to 2mins
         display = document.querySelector('#timer'),
         timeObj = CountDownTimer.parse(time);
 

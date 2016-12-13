@@ -6,13 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Effective JavaScript: Frogger</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="container">
+    <header>
+        <h2>Classic Arcade Game</h2>
+        <h4>For the Udacity Front-End Web Developer Nanodegree</h4>
+    </header>
     <div class="row">
-        <div class="col-md-4">
-            <p>This is the Frogger Game. I hope you enjoy.</p>
-        </div>
+        <aside class="col-md-4 rules">
+            <h3>Game Rules</h3>
+            <p>
+                This is the Frogger Game. The goal of this game is to gather as
+                many artifacts (gems, keys, hearts) as possible within a given
+                time period, while avoiding the ladybugs. The game starts
+                automatically. I hope you enjoy.
+            </p>
+            <p>Refresh this page to start a new game</p>
+            <ul>
+                <li>
+                    Use arrow keys to move left, right, up, down. The following
+                    keys can also be used:
+                    <ul>
+                        <li><em>Enter</em>: select a player</li>
+                        <li><em>Spacebar</em> or <em>'P'</em>: pause game</li>
+                        <li><em>'S'</em>: stop game</li>
+                    </ul>
+                </li>
+                <li>
+                    Score points when you gather artifacts:
+                    <ul>
+                        <li>Blue gem: 1 point</li>
+                        <li>Green gem: 2 points</li>
+                        <li>Orange gem: 4 points</li>
+                        <li>Key: 8 points</li>
+                        <li>Star: 10 points</li>
+                        <li>Heart: 12 points + 1 life</li>
+                    </ul>
+                </li>
+                <li>You lose 3 points and a life when you run into a ladybug</li>
+                <li>
+                    Game ends when:
+                    <ul>
+                        <li>You have no lives left, and / or</li>
+                        <li>You run out of time i.e. the timer reaches 00:00min</li>
+                    </ul>
+                </li>
+            </ul>
+        </aside>
         <main class="col-md-7 main-game">
             <script src="js/jQuery.js"></script>
             <script src="js/resources.js"></script>
@@ -21,12 +63,10 @@
         </main>
         <div class="col-md-1 controls">
             <div>Timer: <span id="timer"></span> minutes</div>
-            <div id="score"></div>
-            <div id="lives"></div>
-            <div><button id="start-button" type="button">Start</button></div>
-            <div><button id="stop-button" type="button">Stop</button></div>
         </div>
     </div>
+    <hr>
+    <footer>By: Ebenezer Amoh</footer>
 
 </body>
 </html>

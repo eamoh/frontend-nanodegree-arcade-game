@@ -1,13 +1,55 @@
-* {
-    /*text-align: center;*/
-    border: 1px red solid;
+.container {
+    max-width: 1000px;
+    flex-wrap: wrap;
 }
 
-.container {
-  max-width: 1000px;
-  flex-wrap: wrap;
+body {
+    box-sizing: border-box;
+    font-family: 'Josefin Sans', sans-serif;
+    background-color: #f2f2f2;
+}
+
+header {
+    text-align: center;
 }
 
 main {
-  text-align: center;
+    text-align: center;
+}
+
+h4 {
+    font-weight: 300;
+}
+
+p, ul, div, span {
+    font-size: 16px;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: -webkit-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+    background-image: -moz-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+    background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+    background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+}
+}
+
+.controls {
+    text-align: center;
+    display: inline-block;
+}
+
+.controls > div {
+    padding: 5px;
+    display: inline-block;
+}
+
+#timer {
+    padding: 5px;
+    border-radius: 5px;
+    background: #081e1c;
+    display: inline-block;
+    font-family: 'Josefin Sans', sans-serif;
+    color: #c5ea00;
 }
