@@ -252,7 +252,7 @@ ScoreBoard.prototype.update = function() {
 };
 
 ScoreBoard.prototype.render = function() {
-    ctx.font = "22px Arial Black";
+    ctx.font = "30px Arial Black";
     ctx.fillStyle = "white";
     ctx.fillText(this.score, this.x - 20, this.y + 125);
     ctx.strokeText(this.score, this.x - 20, this.y + 125);
@@ -271,11 +271,11 @@ LifeTracker.prototype.update = function() {
 };
 
 LifeTracker.prototype.render = function () {
-    ctx.font = "22px Arial Black";
+    ctx.font = "30px Arial Black";
     ctx.fillStyle = "white";
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    ctx.fillText(this.count, this.x - 20, this.y + 125);
-    ctx.strokeText(this.count, this.x - 20, this.y + 125);
+    ctx.drawImage(Resources.get(this.sprite), this.x + 20, this.y + 70, 40, 80);
+    ctx.fillText(this.count, this.x - 30, this.y + 125);
+    ctx.strokeText(this.count, this.x - 30, this.y + 125);
 };
 
 // instantiate scoreboard and LifeTracker
@@ -350,7 +350,7 @@ lifeTracker = new LifeTracker(400, -30);
 
  // Draw the item on the game screen
  Item.prototype.render = function() {
-     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+     ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 70, 140);
  };
 
 // Create array from which to select random artifacts to be place on game board
