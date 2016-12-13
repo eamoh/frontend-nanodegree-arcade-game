@@ -69,7 +69,7 @@ var Engine = (function(global) {
              if (gamePlaying) {
                  // start stopClock timer
                  stopClock.start();
-                 
+
                  /* Call our update/render functions, pass along the time delta to
                   * our update function since it may be used for smooth animation.
                   */
@@ -255,7 +255,6 @@ var Engine = (function(global) {
         ctx.fillText("Game over", ctx.canvas.width / 2, 300);
         //ctx.strokeText("Game over", canvas.width / 2, canvas.height / 2 + 60);
         cancelAnimationFrame(reqID);
-        console.log("game over function activated");
     }
 
     /* Go ahead and load all of the images we know we're going to need to

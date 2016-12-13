@@ -77,7 +77,7 @@ Enemy.prototype.render = function() {
 
 // Increase speed of enemies slightly
 Enemy.prototype.increaseSpeed = function () {
-    this.speed += 5;
+    this.speed += 2;
 };
 
 // Now write your own player class
@@ -191,7 +191,6 @@ document.addEventListener('keyup', function(e) {
 
     if (!gamePlaying) {
         selector.handleInput(allowedKeys[e.keyCode]);
-        console.log(selectedChar);
     } else {
         player.handleInput(allowedKeys[e.keyCode]);
     }
@@ -300,7 +299,6 @@ lifeTracker = new LifeTracker(400, -30);
     this.visible = true;
     this.points = artifacts[i].points;
     this.lives = artifacts[i].lives;
-    console.log(i);
  };
 
  // What to do once player picks up item
@@ -448,10 +446,16 @@ CountDownTimer.prototype.start = function() {
         }
 
         timeObj = CountDownTimer.parse(diff);
-        that.clockFunctions.forEach(function(ftn) {
-            ftn.call(this, timeObj.minutes, timeObj.seconds);
-        }, that);
-    })();
+        
+        if (timeObj.seconds === 0) {
+            gameOver();
+        }
+        if (timeObj.seconds > 0) {
+            that.clockFunctions.forEach(function(ftn) {
+                ftn.call(this, timeObj.minutes, timeObj.seconds);
+            }, that);
+        }
+    }());
 };
 
 // adds functions ('ftn') to the clockFunctions array so they can be executed
@@ -479,7 +483,7 @@ CountDownTimer.parse = function(seconds) {
 
 // display countdown timer on canvas / HTML and start running clock when game starts
 window.onload = function() {
-    var time = 15,      // set timer to 2mins
+    var time = 5,      // set timer to 2mins
         display = document.querySelector('#timer'),
         timeObj = CountDownTimer.parse(time);
 
