@@ -80,6 +80,15 @@ Enemy.prototype.increaseSpeed = function () {
     this.speed += 2;
 };
 
+//Enemy.prototype.checkCollisions = function() {
+    // code goes here
+    // no need to iterate over the allEnemies array bc checking individually for each enemy instance
+    // 'this' will be the current enemy instance
+    // this.x etc. instead of enemy.x etc
+    // then call the chechCollisions function, for example, frome the Enemy update method (this)
+
+//};
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -212,14 +221,16 @@ function checkCollisions() {
           (player.y + yStep) > allEnemies[i].y) {
 
               // lose 3pts  and 1 life if player collides with enemy.
-            if (player.score <= 0) {
-                player.score = 0;
-                player.lives -= 1;
-                player.reset();
+              if (player.score > 2 ) {
+                  player.score -= 3;
+                  player.lives -= 1;
+                  player.reset();
+            } else if ((player.score <= 2) && (player.score > 0)) {
+               player.score -= 1;
             } else {
-                player.score -= 3;
-                player.lives -= 1;
-                player.reset();
+                  player.score = 0;
+                  player.lives -= 1;
+                  player.reset();
             }
         }
     }
