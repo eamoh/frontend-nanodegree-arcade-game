@@ -7,6 +7,9 @@ For detailed instructions on how to get started, check out this [guide](https://
 
 ## Classic Arcade Game
 
+### Running the Game
+To run the game, open index.html in your web browser.
+
 ### Game Rules
 This is the Frogger Game. The goal of this game is to gather as many artifacts (gems, keys, hearts) as possible within a given time period, while avoiding the ladybugs. The game starts automatically. I hope you enjoy.
 
