@@ -1,9 +1,9 @@
-// creating xStep for Player left and right movements and yStep for
-// Player up and down movements. xStep is calculated as one-fifth of
-// canvas width. yStep is set to 83 to reflect the same measurements in
+// creating XSTEP for Player left and right movements and YSTEP for
+// Player up and down movements. XSTEP is calculated as one-fifth of
+// canvas width. YSTEP is set to 83 to reflect the same measurements in
 // Engine.js.
-var xStep = 101;
-var yStep = 83;
+var XSTEP = 101;
+var YSTEP = 83;
 var selectedChar;
 /* This array holds the characters a player can select from.
  */
@@ -68,7 +68,28 @@ Enemy.prototype.update = function(dt) {
           this.increaseSpeed();
         }
     }
+
+    // checks collision with player
+    this.playerCollision();
 };
+
+// create super class that renders image for all characters & items
+var Character = function() {
+   this.sprite = this.sprite;  // placeholder to be replaced by Object.sprite
+   this.x = 0;
+   this.y = 0;
+};
+
+// render method for Character class
+Character.prototype.render = function() {
+   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+// Enemy inherits from Character so it can also inherit render method
+//Enemy.prototype = new Character();
+
+//Correct the constructor poniter because it is pointing to Character
+//Enemy.prototype.constructor = Enemy;
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -80,14 +101,30 @@ Enemy.prototype.increaseSpeed = function () {
     this.speed += 2;
 };
 
-//Enemy.prototype.checkCollisions = function() {
-    // code goes here
-    // no need to iterate over the allEnemies array bc checking individually for each enemy instance
-    // 'this' will be the current enemy instance
-    // this.x etc. instead of enemy.x etc
-    // then call the chechCollisions function, for example, frome the Enemy update method (this)
+// Checks collision by comparing if x and y-coordinates are the same.
+// Function does this by checking that player and enemy occupy the same block.
+// If there's collision with enemy, player returns to starting block and scoring
+// is updated.
+Enemy.prototype.playerCollision = function() {
+    // checks collision with player
+    if (player.x < (this.x + XSTEP) && (player.x + XSTEP) > this.x &&
+      player.y < (this.y + YSTEP) && (player.y + YSTEP) > this.y) {
 
-//};
+          // lose 3pts  and 1 life if player collides with enemy.
+          if (player.score > 2 ) {
+              player.score -= 3;
+              player.lives -= 1;
+              player.reset();
+        } else if ((player.score <= 2) && (player.score > 0)) {
+           player.score -= 1;
+        } else {
+              player.score = 0;
+              player.lives -= 1;
+              player.reset();
+        }
+    }
+
+};
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -113,13 +150,35 @@ var Player = function() {
 Player.prototype.update = function(dt) {
     this.dt = dt;
 
-    // checks collision
-    checkCollisions();
+    // checks collision with collectible
+    this.itemCollision();
 };
+
+// Player inherits from Character so it can also inherit render method
+//Player.prototype = new Character();
+
+//Correct the constructor poniter because it is pointing to Character
+//Player.prototype.constructor = Player;
 
 // Draw the enemy on the screen, required method for game
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+// Checks collision by comparing if x and y-coordinates are the same.
+// Function does this by checking that player and artifact occupy the same block.
+// If collision is with artifact, points are accumulated
+Player.prototype.itemCollision = function() {
+   if (this.x < (artifact.x + XSTEP) &&
+      (this.x + XSTEP) > artifact.x &&
+      this.y < (artifact.y + YSTEP) &&
+      (this.y + YSTEP) > artifact.y) {
+
+           artifact.hide();
+           this.score += artifact.points;
+           this.lives += artifact.lives;
+           artifact.reset();
+   }
 };
 
 // receives user input and moves the player according to that input
@@ -129,22 +188,22 @@ Player.prototype.handleInput = function(allowedKeys) {
     switch (allowedKeys) {
         case 'left':
             if (this.x > -1) {
-            this.x -= xStep;
+            this.x -= XSTEP;
             }
             break;
         case 'right':
             if (this.x < 401) {
-            this.x += xStep;
+            this.x += XSTEP;
             }
             break;
         case 'up':
             if (this.y > -92) {
-            this.y -= yStep;
+            this.y -= YSTEP;
             }
             break;
         case 'down':
             if (this.y < 405) {
-            this.y += yStep;
+            this.y += YSTEP;
             }
             break;
         case 'stop':
@@ -215,10 +274,10 @@ document.addEventListener('keyup', function(e) {
 function checkCollisions() {
     // checks collision with enemy
     for (var i = 0; i < allEnemies.length; i++) {
-        if (player.x < (allEnemies[i].x + xStep) &&
-          (player.x + xStep) > allEnemies[i].x &&
-          player.y < (allEnemies[i].y + yStep) &&
-          (player.y + yStep) > allEnemies[i].y) {
+        if (player.x < (allEnemies[i].x + XSTEP) &&
+          (player.x + XSTEP) > allEnemies[i].x &&
+          player.y < (allEnemies[i].y + YSTEP) &&
+          (player.y + YSTEP) > allEnemies[i].y) {
 
               // lose 3pts  and 1 life if player collides with enemy.
               if (player.score > 2 ) {
@@ -236,10 +295,10 @@ function checkCollisions() {
     }
 
     // checks collision with artifacts
-    if (player.x < (artifact.x + xStep) &&
-        (player.x + xStep) > artifact.x &&
-        player.y < (artifact.y + yStep) &&
-        (player.y + yStep) > artifact.y) {
+    if (player.x < (artifact.x + XSTEP) &&
+        (player.x + XSTEP) > artifact.x &&
+        player.y < (artifact.y + YSTEP) &&
+        (player.y + YSTEP) > artifact.y) {
 
             artifact.hide();
             player.score += artifact.points;
@@ -523,7 +582,7 @@ window.onload = function() {
 var Selector = function() {
   this.sprite = 'images/Selector.png';
   this.x = 0;
-  this.y = yStep + 50;
+  this.y = YSTEP + 50;
 };
 
 // receives user input and moves the Selector according to that input
@@ -533,22 +592,22 @@ Selector.prototype.handleInput = function(key) {
     switch (key) {
         case 'left':
             if (this.x > -1) {
-            this.x -= xStep;
+            this.x -= XSTEP;
             }
             break;
         case 'right':
             if (this.x < 401) {
-            this.x += xStep;
+            this.x += XSTEP;
             }
             break;
         case 'up':
             if (this.y > -9) {
-            this.y -= yStep;
+            this.y -= YSTEP;
             }
             break;
         case 'down':
             if (this.y < 405) {
-            this.y += yStep;
+            this.y += YSTEP;
             }
             break;
         case 'enter':
@@ -556,15 +615,15 @@ Selector.prototype.handleInput = function(key) {
             // the user's player selection. The logic for selectedChar is that
             // since playerChoices is basically making possible player objects
             // out of the image sprites in possibleChars, the x coordinates
-            // divided by xStep should give you the index since the x coordinate
+            // divided by XSTEP should give you the index since the x coordinate
             // was initially determined under renderStartScreen by multiplying
-            // the index by xStep. Since the starting x coordinate of 'selector'
+            // the index by XSTEP. Since the starting x coordinate of 'selector'
             // and the first object in playerChoices is the same (0), and they
-            // both move by a factor of xStep, they will always have the same x coord.
-            // Since xStep is >= 101, selectedChar will never be NaN even when
+            // both move by a factor of XSTEP, they will always have the same x coord.
+            // Since XSTEP is >= 101, selectedChar will never be NaN even when
             // this.x = 0.
 
-            selectedChar = this.x / xStep;
+            selectedChar = this.x / XSTEP;
             gamePlaying = true;
             gameReset();
             break;

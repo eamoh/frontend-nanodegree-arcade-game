@@ -116,7 +116,6 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -234,8 +233,8 @@ var Engine = (function(global) {
              * so that we get the benefits of caching these images, since
              * we're using them over and over.
              */
-            playerChoices.push(new Character(possibleChars[i], i * xStep, yStep));
-            ctx.drawImage(Resources.get(possibleChars[i]), i * xStep, yStep);
+            playerChoices.push(new Character(possibleChars[i], i * XSTEP, YSTEP));
+            ctx.drawImage(Resources.get(possibleChars[i]), i * XSTEP, YSTEP);
         }
     }
 
