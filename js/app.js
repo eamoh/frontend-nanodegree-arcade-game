@@ -267,48 +267,7 @@ document.addEventListener('keyup', function(e) {
     }
 });
 
-// Checks collision by comparing if x and y-coordinates are the same.
-// Function does this by checking that player and enemy / artifact occupy the same block.
-// If there's collision with enemy, player returns to starting block and scoring
-// is updated. If collision is with artifact, points are accumulated
-function checkCollisions() {
-    // checks collision with enemy
-    for (var i = 0; i < allEnemies.length; i++) {
-        if (player.x < (allEnemies[i].x + XSTEP) &&
-          (player.x + XSTEP) > allEnemies[i].x &&
-          player.y < (allEnemies[i].y + YSTEP) &&
-          (player.y + YSTEP) > allEnemies[i].y) {
-
-              // lose 3pts  and 1 life if player collides with enemy.
-              if (player.score > 2 ) {
-                  player.score -= 3;
-                  player.lives -= 1;
-                  player.reset();
-            } else if ((player.score <= 2) && (player.score > 0)) {
-               player.score -= 1;
-            } else {
-                  player.score = 0;
-                  player.lives -= 1;
-                  player.reset();
-            }
-        }
-    }
-
-    // checks collision with artifacts
-    if (player.x < (artifact.x + XSTEP) &&
-        (player.x + XSTEP) > artifact.x &&
-        player.y < (artifact.y + YSTEP) &&
-        (player.y + YSTEP) > artifact.y) {
-
-            artifact.hide();
-            player.score += artifact.points;
-            player.lives += artifact.lives;
-            artifact.reset();
-    }
-}
-
 // Scoreboard appears on top of screen and shows score
-
 var ScoreBoard = function() {
     this.x = 100;
     this.y = -30;
@@ -591,7 +550,7 @@ Selector.prototype.handleInput = function(key) {
     // the range of the options shown
     switch (key) {
         case 'left':
-            if (this.x > -1) {
+            if (this.x > 0) {
             this.x -= XSTEP;
             }
             break;
@@ -601,12 +560,12 @@ Selector.prototype.handleInput = function(key) {
             }
             break;
         case 'up':
-            if (this.y > -9) {
+            if (this.y > 133) {
             this.y -= YSTEP;
             }
             break;
         case 'down':
-            if (this.y < 405) {
+            if (this.y < 133) {
             this.y += YSTEP;
             }
             break;
